@@ -1,0 +1,35 @@
+{
+  "label_type": "intensity",
+  "label_names": [
+    "level1",
+    "level2",
+    "level3"
+  ],
+  "num_classes": 3,
+  "best_val_acc": 0.8198244708311823,
+  "best_epoch": 50,
+  "total_time_sec": 2253.6660335063934,
+  "train_dir": "/mnt/a782f50b-253f-43da-ac99-945477898740/chensheng/Project2/train/train",
+  "val_dir": "/mnt/a782f50b-253f-43da-ac99-945477898740/chensheng/Project2/train/val",
+  "args": {
+    "config": "/home/chensheng/1Project/Project2/config.yaml",
+    "train_dir": null,
+    "val_dir": null,
+    "checkpoint_dir": "AuxClassifier/checkpoints_emotion",
+    "gpu": 1,
+    "epochs": 50,
+    "batch_size": 64,
+    "num_workers": 8,
+    "lr": 0.0001,
+    "weight_decay": 0.0001,
+    "seed": 42,
+    "hidden_dim": 256,
+    "num_heads": 4,
+    "num_layers": 3,
+    "ff_dim": 512,
+    "dropout": 0.1,
+    "max_len": 256,
+    "use_cls_token": false,
+    "label_type": "intensity"
+  }
+}

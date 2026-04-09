@@ -1,0 +1,18 @@
+{
+  "num_groups": 588,
+  "mean_metrics": {
+    "EmTA": 0.9642857142857143,
+    "IdPA": 0.9991496598639455,
+    "InPA": 0.8801020408163265,
+    "JPE": 0.05006400302454804,
+    "SSR_emo": 0.8520408163265306
+  },
+  "stage": "stage2",
+  "pair_type": "text_emotion",
+  "result_root": "Experiments/stage2_swap_results/text_emotion",
+  "classifier_checkpoints": {
+    "emotion": "/home/chensheng/1Project/Project2/AuxClassifier/checkpoints_emotion/emotion/model_best.pth",
+    "intensity": "/home/chensheng/1Project/Project2/AuxClassifier/checkpoints_emotion/intensity/model_best.pth",
+    "identity": "/home/chensheng/1Project/Project2/AuxClassifier/checkpoints_identity/model_best.pth"
+  }
+}
