@@ -1,63 +1,156 @@
-# DecTalk3D：分层解耦引导的情感可控VQ-VAE 3D说话人脸生成方法
+# ProDecTalk3D：结合分阶段解耦和向量量化扩散的情感可控 3D 说话人脸生成方法
+
 ## 简介
-项目位置：https://github.com/chen114514sheng/DecTalk3D
 
-本项目使用语音、文本、身份向量这3个条件，在VQ-VAE结构的基础上，通过分层解耦的方法生成说话人脸视频。
+本仓库为论文 **《结合分阶段解耦和向量量化扩散的情感可控 3D 说话人脸生成方法》** 的代码实现。
+
+ProDecTalk3D 面向语音驱动的情感可控 3D 说话人脸生成任务，在 VQ-VAE 的基础上进一步引入 **分阶段解耦** 与 **向量量化扩散** 两个关键思想：一方面，在重建阶段基于身份向量、文本描述等条件对人脸特征进行分阶段解耦与反向融合，以提升特征表示质量与条件可解释性；另一方面，在生成阶段以语音为主导，引入向量量化扩散模型，并通过分阶段加入不同模态条件，逐步约束顶层与底层人脸特征的生成范围，从而提升生成精度与情感表达稳定性。
+
+- 仓库地址：https://github.com/chen114514sheng/ProDecTalk3D
+- 论文题目：**ProDecTalk3D: Controllable 3D Talking Face Generation with Progressive Decoupling and Vector Quantized Diffusion**
+- 论文状态：当前论文尚未投稿，仓库内容以代码与实验实现为准
+
 ## 方法概述
-项目整体流程如下：
 
-第一阶段
-<img width="16538" height="11675" alt="图1" src="https://github.com/user-attachments/assets/fbbe08b7-ff75-42a8-a5d1-37eb2983673c" />
-第二阶段
-<img width="14813" height="8988" alt="图2" src="https://github.com/user-attachments/assets/1bd8c91b-e73f-4c1c-9ecc-9e271ae89e62" />
+本文方法包含三个部分：
+
+- **第一阶段**：分阶段解耦重建。基于身份向量、文本描述等条件对顶层与底层人脸特征进行逐步解耦与反向融合。
+- **第二阶段**：条件生成建模。在第一阶段离散表示的基础上，结合语音、文本和身份条件生成人脸运动参数。
+- **扩散生成阶段**：向量量化扩散生成。通过离散潜在空间中的扩散与去噪过程，进一步提升生成人脸的细节质量与情感控制稳定性。
+
+### 第一阶段
+
+![stage1](images/图1.png)
+
+### 第二阶段
+
+![stage2](images/图2.png)
+
+### 扩散生成阶段
+
+![stage3](images/图3.png)
+
+## 项目结构
+
+```text
+ProDecTalk3D/
+├── DataProcess/           # 数据预处理与数据集划分
+├── FLAME/                 # FLAME 相关文件与模板
+├── VQVAE2/                # 第一阶段：分阶段解耦 VQ-VAE
+├── Diffusion/             # 第二阶段：向量量化扩散生成模型
+├── Render.py              # 生成说话人脸视频
+├── Quality.py             # 定量分析与可视化对比
+├── Experiments/           # 条件交换实验（可选）
+├── AuxClassifier/         # 辅助分类器（可选）
+├── Utils.py               # 通用工具函数
+├── config.yaml            # 路径与训练/预测配置
+└── environment.yml        # 环境依赖参考
+```
+
+## 运行环境
+
+建议使用 Linux + NVIDIA GPU 环境运行。
+
+项目环境建议以 `environment.yml` 为参考，并结合本地 CUDA 与 PyTorch 版本进行配置。
+
 ## 数据集
-3D人脸数据来自3DMEAD，语音数据来自MEAD，文本数据来自TA-MEAD。
 
-数据集预处理：
+本项目使用：
+
+- **MEAD**：语音与视频数据  
+  官网：https://wywu.github.io/projects/MEAD/MEAD.html
+- **3DMEAD**：基于 MEAD 进一步处理得到的 3D 人脸运动数据  
+  参考处理来源：https://github.com/radekd91/inferno/tree/release/EMOTE/inferno_apps/TalkingHead/data_processing
+- **TA-MEAD**：用于描述面部情感与动作的文本数据
+
+### 数据预处理
+
+```bash
+python DataProcess/mead0.py
+python DataProcess/mead1.py
 ```
-DataProcess/mead0.py
+
+## 配置说明
+
+项目中的数据路径、FLAME 路径、模型权重路径和训练参数统一通过 `config.yaml` 设置。
+
+至少建议检查以下内容：
+
+- `train_file_path`
+- `val_file_path`
+- `test_file_path`
+- `flame_model`
+- `static_landmark_embedding`
+- `dynamic_landmark_embedding`
+- `predict.vqvae_dir`
+- `predict.diffusion_dir`
+- `predict.save_path`
+- `stage1.checkpoint_dir`
+- `stage2.checkpoint_dir`
+
+## 训练
+
+### 第一阶段：训练分阶段解耦 VQ-VAE
+
+```bash
+python VQVAE2/Train.py
 ```
-数据集划分：
+
+### 第二阶段：训练向量量化扩散生成模型
+
+```bash
+python Diffusion/Train.py
 ```
-DataProcess/mead1.py
-```
-## 训练过程
-训练第一阶段模型：
-```
-VQVAE2/Train.py
-```
-训练第二阶段模型：
-```
-Generation/Train.py
-```
+
 ## 测试与生成
-评估第一阶段模型的重建效果：
+
+### 第一阶段：评估重建效果
+
+```bash
+python VQVAE2/Predict.py
 ```
-VQVAE2/Predict.py
+
+### 第二阶段：评估生成效果并保存结果
+
+```bash
+python Diffusion/Predict.py
 ```
-评估第二阶段模型的生成效果，保存生成结果：
+
+### 渲染视频与定量分析
+
+```bash
+python Render.py
+python Quality.py
 ```
-Genetion/Predict.py
+
+## 条件交换实验（可选）
+
+若希望进一步验证模型的条件解耦能力与控制能力，可使用 `Experiments/` 中的脚本：
+
+```bash
+python Experiments/build_swap_pairs.py
+python Experiments/run_stage1_swap.py --pair_type text_emotion --deduplicate_reverse
+python Experiments/run_stage2_swap.py --pair_type text_emotion --deduplicate_reverse
+python Experiments/eval_swap_metrics.py
+python Experiments/render_swap_vis.py --stage all --pair_type all
+python Experiments/render_swap_video.py --stage all --pair_type all
 ```
-生成说话人脸视频：
+
+若需要交换实验中的定量评估，请先训练辅助分类器：
+
+```bash
+python AuxClassifier/train_emotion.py
+python AuxClassifier/train_identity.py
 ```
-Render0.py #也可用于生成其他模型的说话人脸视频
-```
-本模型与其他模型比较：
-```
-Render1.py #合成对比视频
-Quality.py #生成heatmap
-```
-## 注意事项
-模型参数、权重保存路径、文件路径通过以下文件设置：
-```
-config.yaml
-```
-以下文件中的路径同样需要设置：
-```
-DataProcess/mead0.py
-DataProcess/mead1.py
-Render0.py
-Render1.py
-Quality.py
+
+## 引用
+
+如果本项目对你的研究有帮助，可引用对应论文与本仓库代码。
+
+```bibtex
+@misc{prodectalk3d,
+  title  = {ProDecTalk3D: Controllable 3D Talking Face Generation with Progressive Decoupling and Vector Quantized Diffusion},
+  author = {Chen, Sheng and Sun, Qiang},
+  note   = {Unpublished manuscript and code available at https://github.com/chen114514sheng/ProDecTalk3D}
+}
 ```
