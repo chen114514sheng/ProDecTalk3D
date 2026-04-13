@@ -15,16 +15,13 @@ dynamic_landmark_embedding: /home/chensheng/1Project/Project2/FLAME/flame_model/
 predict:
   # 保存路径
   vqvae2_dir: /home/chensheng/1Project/Project2/VQVAE2/checkpoints1/model_val.pth
-  diffusion_dir: /home/chensheng/1Project/Project2/Diffusion/checkpoints/model_epoch_800.pth
+  diffusion_dir: /home/chensheng/1Project/Project2/Diffusion/checkpoints/model_epoch_200.pth
   save_path: /mnt/a782f50b-253f-43da-ac99-945477898740/chensheng/Project2/predict/STt_vertices
   # 参数设置
   gpu: 0  #0/1
   # flame参数
   shape: 300  #形状参数数量
   expression: 100  #表情参数数量
-
-  # (loss:0.01-0.01-10-100)(sample:25-25-0.2-5)(epoch:800)
-  #
 
 # python VQVAE2/Train.py
 stage1:
