@@ -58,7 +58,7 @@ ProDecTalk3D/
 - **MEAD**：语音与视频数据  
   官网：https://wywu.github.io/projects/MEAD/MEAD.html
 - **3DMEAD**：基于 MEAD 进一步处理得到的 3D 人脸运动数据  
-  参考处理来源：https://github.com/radekd91/inferno/tree/release/EMOTE/inferno_apps/TalkingHead/data_processing
+  下载位置：https://github.com/radekd91/inferno/tree/release/EMOTE/inferno_apps/TalkingHead/data_processing
 - **TA-MEAD**：用于描述面部情感与动作的文本数据
 
 ### 数据预处理
@@ -114,16 +114,25 @@ python VQVAE2/Predict.py
 python Diffusion/Predict.py
 ```
 
-### 渲染视频与定量分析
+### 渲染视频与对比结果
 
 ```bash
 python Render.py
 python Quality.py
 ```
 
+对比结果：https://www.bilibili.com/video/BV1qvdQB1ETJ
+
 ## 条件交换实验（可选）
 
-若希望进一步验证模型的条件解耦能力与控制能力，可使用 `Experiments/` 中的脚本：
+若需要交换实验中的定量评估，请先训练辅助分类器：
+
+```bash
+python AuxClassifier/train_emotion.py
+python AuxClassifier/train_identity.py
+```
+
+再使用脚本：
 
 ```bash
 python Experiments/build_swap_pairs.py
@@ -134,12 +143,9 @@ python Experiments/render_swap_vis.py --stage all --pair_type all
 python Experiments/render_swap_video.py --stage all --pair_type all
 ```
 
-若需要交换实验中的定量评估，请先训练辅助分类器：
+重建阶段：https://www.bilibili.com/video/BV1qvdQB1E8x
 
-```bash
-python AuxClassifier/train_emotion.py
-python AuxClassifier/train_identity.py
-```
+生成阶段：https://www.bilibili.com/video/BV1qvdQB1EL3
 
 ## 引用
 
